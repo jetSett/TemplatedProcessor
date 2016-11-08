@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Processeur" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Processeur" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Processeur" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-ftemplate-depth=1000000000" />
+		</Compiler>
+		<Unit filename="Operandes/add.cpp" />
+		<Unit filename="Operandes/and.cpp" />
+		<Unit filename="Operandes/asr.cpp" />
+		<Unit filename="Operandes/call.cpp" />
+		<Unit filename="Operandes/jumpReturn.cpp" />
+		<Unit filename="Operandes/leth.cpp" />
+		<Unit filename="Operandes/letl.cpp" />
+		<Unit filename="Operandes/lsl.cpp" />
+		<Unit filename="Operandes/lsr.cpp" />
+		<Unit filename="Operandes/or.cpp" />
+		<Unit filename="Operandes/rmemCopy.cpp" />
+		<Unit filename="Operandes/snif.cpp" />
+		<Unit filename="Operandes/sub.cpp" />
+		<Unit filename="Operandes/wmem.cpp" />
+		<Unit filename="Operandes/xor.cpp" />
+		<Unit filename="Util.cpp" />
+		<Unit filename="Util.hpp" />
+		<Unit filename="main.cpp" />
+		<Unit filename="metaprog.cpp" />
+		<Unit filename="metaprog.hpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
