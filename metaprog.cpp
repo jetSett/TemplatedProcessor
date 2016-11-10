@@ -1,5 +1,5 @@
 #include "metaprog.hpp"
 
-void doNothing(Memoire&, Boite_registres&, unsigned int&){
-    std::cout << "Instruction implémentée dans le turfu !" << std::endl;
+void doNothing(Memory&, Reg_box&, unsigned int&){
+    std::cout << "Instruction unimplemented yet" << std::endl;
 }

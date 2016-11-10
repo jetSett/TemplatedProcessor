@@ -1,7 +1,7 @@
 #include "../metaprog.hpp"
 
 template<word arguments>
-void lsl(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void lsl(Memory& mem, Reg_box& reg, unsigned int& pc){
     const bool ilyauneconstante = ((arguments &0b100000000000)>> 11); // on récupère le flag
     if(ilyauneconstante){
         reg[(arguments & 0b011100000000)>>8] = reg[(arguments & 0b000011110000)>>4] << (arguments & 0b000000001111);
@@ -13,13 +13,13 @@ void lsl(Memoire& mem, Boite_registres& reg, unsigned int& pc){
 
 
 template<word arguments>
-struct Operande<0x7, arguments>{
-    fonction operande(){
+struct Operand<0x7, arguments>{
+    fonction operand(){
         return lsl<arguments>;
     }
 };
 
 
-void creerLsl(table_operandes& t){
-    CreerTableau<0x7000, 0x7FFF>::creerTab(t);
+void createLsl(Operands_table& t){
+    CreateTab<0x7000, 0x7FFF>::createTab(t);
 }

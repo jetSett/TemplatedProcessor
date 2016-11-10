@@ -9,43 +9,43 @@
 
 using word = uint16_t;
 
-using Memoire = std::vector<word>;
-using Boite_registres = std::array<word, 16>;
+using Memory = std::vector<word>;
+using Reg_box = std::array<word, 16>;
 
 
-using fonction =  std::function<void(Memoire&, Boite_registres&, unsigned int&)>; //arguments : <mémoire> <registres> <pc>
-using table_operandes = std::array<fonction, 0x10000>;
+using fonction =  std::function<void(Memory&, Reg_box&, unsigned int&)>; //arguments : <mémoire> <registres> <pc>
+using Operands_table = std::array<fonction, 0x10000>;
 
 
-void doNothing(Memoire&, Boite_registres&, unsigned int&);
+void doNothing(Memory&, Reg_box&, unsigned int&);
 
 template<word code, word arguments>
-struct Operande{
-    fonction operande(){
+struct Operand{
+    fonction operand(){
         return doNothing;
     }
 };
 
 template<word opcode>
 fonction getFonction(){
-        Operande<((opcode & 0xF000) >> 12), (opcode & 0x0FFF)> op;
-        return fonction(op.operande());
+        Operand<((opcode & 0xF000) >> 12), (opcode & 0x0FFF)> op;
+        return fonction(op.operand());
 }
 
 template<word n, word fin>
-struct CreerTableau{
-    static void creerTab(table_operandes& tableau){
-        tableau[n] = getFonction<n>();
-        CreerTableau<n+1, fin>::creerTab(tableau);
+struct CreateTab{
+    static void createTab(Operands_table& tab){
+        tab[n] = getFonction<n>();
+        CreateTab<n+1, fin>::createTab(tab);
     }
 };
 
 template<word n>
-struct CreerTableau<n, n>{
-    static void creerTab(table_operandes& tableau){
-        tableau[n] = getFonction<n>();
+struct CreateTab<n, n>{
+    static void createTab(Operands_table& tab){
+        tab[n] = getFonction<n>();
     }
 };
 
-// on appelle creerTableau<0xFFFF>
+// on appelle createTab<0xFFFF>
 #endif // METAPROG_HPP_INCLUDED

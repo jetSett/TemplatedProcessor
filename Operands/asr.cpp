@@ -3,7 +3,7 @@
 ///TODO : LE CODER
 
 
-void asrn(Memoire& mem, Boite_registres& reg, word registre, word n, bool rajouter){
+void asrn(Memory& mem, Reg_box& reg, word registre, word n, bool rajouter){
     if(n==0){
         return;
     }
@@ -12,7 +12,7 @@ void asrn(Memoire& mem, Boite_registres& reg, word registre, word n, bool rajout
 }
 
 template<word arguments>
-void asr(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void asr(Memory& mem, Reg_box& reg, unsigned int& pc){
     const bool ilyauneconstante = ((arguments &0x800)>> 15); // on récupère le flag
     if(ilyauneconstante){
         reg[(arguments & 0b011100000000)>>8] = reg[(arguments & 0b000011110000)>>4];
@@ -25,13 +25,13 @@ void asr(Memoire& mem, Boite_registres& reg, unsigned int& pc){
 }
 
 template<word arguments>
-struct Operande<0x9, arguments>{
-    fonction operande(){
+struct Operand<0x9, arguments>{
+    fonction operand(){
         return asr<arguments>;
     }
 };
 
 
-void creerAsr(table_operandes& t){
-    CreerTableau<0x9000, 0x9FFF>::creerTab(t);
+void createAsr(Operands_table& t){
+    CreateTab<0x9000, 0x9FFF>::createTab(t);
 }

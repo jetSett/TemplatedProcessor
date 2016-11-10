@@ -2,7 +2,7 @@
 
 
 template<word arguments>
-void letl(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void letl(Memory& mem, Reg_box& reg, unsigned int& pc){
     const word regDestination = (arguments & 0b111100000000) >> 8;
     const word constante = arguments & 0b000011111111;
     const bool constanteNeg = (constante & 0b10000000) >> 7;
@@ -16,13 +16,13 @@ void letl(Memoire& mem, Boite_registres& reg, unsigned int& pc){
 
 
 template<word arguments>
-struct Operande<0xC, arguments>{
-    fonction operande(){
+struct Operand<0xC, arguments>{
+    fonction operand(){
         return letl<arguments>;
     }
 };
 
 
-void creerLetl(table_operandes& t){
-    CreerTableau<0xC000, 0xCFFF>::creerTab(t);
+void createLetl(Operands_table& t){
+    CreateTab<0xC000, 0xCFFF>::createTab(t);
 }
