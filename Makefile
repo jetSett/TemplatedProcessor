@@ -1,5 +1,5 @@
 CXX = g++-4.9
-CXXFLAGS = -Wall -fexceptions -ftemplate-depth=1000000000 -std=c++14
+CXXFLAGS = -Wall -fexceptions -ftemplate-depth=1000000000 -std=c++14 -g
 LDFLAGS=
 EXEC=Processeur
 PWD = $(shell pwd)

@@ -4,7 +4,7 @@
 
 const unsigned memSize = 1000000;
 
-Processor::Processor(const std::string& file) : _mem(memSize, 0)
+Processor::Processor(const std::string& file) : _mem(memSize, 0), _pc(0)
 {
 
     //reading the file
@@ -21,6 +21,7 @@ Processor::Processor(const std::string& file) : _mem(memSize, 0)
         ss >> w;
         _instructions.push_back(w);
     }
+    std::cout << "Number of instructions : " << _instructions.size() << std::endl;
 
     _reg.fill(0);
     createWmem(_operands); // 0
@@ -56,8 +57,14 @@ void Processor::printState(){
 }
 
 void Processor::run(bool interactive){
+    std::cout << "Running" << std::endl;
     while(_pc < _instructions.size()){
+        printState();
         word inst = _instructions[_pc];
+        if(interactive)
+            std::cin.get();
         _operands[inst](_mem, _reg, _pc);
     }
+    printState();
+    std::cout << "Ending" << std::endl;
 }

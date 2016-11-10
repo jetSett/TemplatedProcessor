@@ -19,12 +19,16 @@ int main(int argc, char** argv)
 	}
 
 	bool interative;
-	if(string(argv[1]) == string("i"))
+	if(string(argv[1]) == string("i")){
 		interative = true;
-	else if(string(argv[1]) == string("d"))
+	}
+	else if(string(argv[1]) == string("d")){
 		interative = false;
-	else
+	}
+	else{
 		cerr << "Please use a valid first argument. Accepted : i, d" << endl;
+		return 1;
+	}
 
 	try{
 		Processor proc(argv[2]);
