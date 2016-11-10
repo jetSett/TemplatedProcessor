@@ -3,7 +3,7 @@
 #include "../Util.hpp"
 
 template<word arguments>
-void jump(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void jump(Memory& mem, Reg_box& reg, unsigned int& pc){
     int16_t c = conversionNeg12bit(arguments);
     pc +=  c;
     if(pc < 0){
@@ -12,25 +12,25 @@ void jump(Memoire& mem, Boite_registres& reg, unsigned int& pc){
 }
 
 
-void returnOp(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void returnOp(Memory& mem, Reg_box& reg, unsigned int& pc){
     pc = reg[15];
 }
 
 template<word arguments>
-struct Operande<0xB, arguments>{
-    fonction operande(){
+struct Operand<0xB, arguments>{
+    fonction operand(){
         return jump<arguments>;
     }
 };
 
 template<>
-struct Operande<0xB, 1>{
-    fonction operande(){
+struct Operand<0xB, 1>{
+    fonction operand(){
         return returnOp;
     }
 };
 
 
-void creerJumpReturn(table_operandes& t){
-    CreerTableau<0xB000, 0xBFFF>::creerTab(t);
+void createJumpReturn(Operands_table& t){
+    CreateTab<0xB000, 0xBFFF>::createTab(t);
 }

@@ -2,7 +2,7 @@
 
 
 template<word arguments>
-void wmem(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void wmem(Memory& mem, Reg_box& reg, unsigned int& pc){
     const word rj = arguments & 0b000011110000;
     const word ri = arguments & 0b000000001111;
     mem[reg[rj]] = reg[ri];
@@ -11,13 +11,13 @@ void wmem(Memoire& mem, Boite_registres& reg, unsigned int& pc){
 
 
 template<word arguments>
-struct Operande<0x0, arguments>{
-    fonction operande(){
+struct Operand<0x0, arguments>{
+    fonction operand(){
         return wmem<arguments>;
     }
 };
 
 
-void creerWmem(table_operandes& t){
-    CreerTableau<0x0000, 0x0FFF>::creerTab(t);
+void createWmem(Operands_table& t){
+    CreateTab<0x0000, 0x0FFF>::createTab(t);
 }

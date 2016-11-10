@@ -50,7 +50,7 @@ bool cond<0x7>(word op1, word op2){
 
 
 template<word arguments>
-void snif(Memoire& mem, Boite_registres& reg, unsigned int& pc){
+void snif(Memory& mem, Reg_box& reg, unsigned int& pc){
     const word condition = (arguments & 0b011100000000) >> 8;
     const bool ilyauneconstante = ((arguments &0b100000000000)>> 11); // on récupère le flag
     if(ilyauneconstante){
@@ -62,12 +62,12 @@ void snif(Memoire& mem, Boite_registres& reg, unsigned int& pc){
 
 
 template<word arguments>
-struct Operande<0x3, arguments>{
-    fonction operande(){
+struct Operand<0x3, arguments>{
+    fonction operand(){
         return snif<arguments>;
     }
 };
 
-void creerSnif(table_operandes& t){
-    CreerTableau<0x3000, 0x3FFF>::creerTab(t);
+void createSnif(Operands_table& t){
+    CreateTab<0x3000, 0x3FFF>::createTab(t);
 }
