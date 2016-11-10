@@ -81,6 +81,7 @@ int main(int argc, char** argv)
     while(pc < instructions.size()){
         afficherEtat(reg, pc);
         table[instructions[pc]](mem, reg, pc);
+        cin.get();
     }
     afficherEtat(reg, pc);
 
