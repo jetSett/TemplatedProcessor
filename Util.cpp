@@ -5,7 +5,7 @@ int16_t conversionNeg4bit(word mot){
     if(((mot & 0b1000) >> 3) == 0){
         return mot;
     }else{
-        return - ( ((mot)^0b111111111111) + 1 );
+        return - ( ((mot)^0b1111) + 1 );
     }
 }
 
