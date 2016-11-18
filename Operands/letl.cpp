@@ -2,7 +2,7 @@
 
 
 template<word arguments>
-void letl(Memory& mem, Reg_box& reg, unsigned int& pc){
+void letl(Memory&, Reg_box& reg, unsigned int& pc){
     const word regDestination = (arguments & 0b111100000000) >> 8;
     const word constante = arguments & 0b000011111111;
     const bool constanteNeg = (constante & 0b10000000) >> 7;

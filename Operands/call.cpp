@@ -2,7 +2,7 @@
 
 
 template<word arguments>
-void call(Memory& mem, Reg_box& reg, unsigned int& pc){
+void call(Memory&, Reg_box& reg, unsigned int& pc){
     reg[15] = pc + 1;
     pc = 16*arguments;
 }

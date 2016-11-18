@@ -51,7 +51,7 @@ bool cond<0x7>(word op1, word op2){
 
 
 template<word arguments>
-void snif(Memory& mem, Reg_box& reg, unsigned int& pc){
+void snif(Memory&, Reg_box& reg, unsigned int& pc){
     const word condition = (arguments & 0b011100000000) >> 8;
     const bool ilyauneconstante = ((arguments & 0b100000000000)>> 11); // on récupère le flag
     if(ilyauneconstante){
