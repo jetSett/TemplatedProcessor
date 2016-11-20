@@ -13,7 +13,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        widget.cpp \
     metaprog.cpp \
     processor.cpp \
     Util.cpp \
@@ -31,13 +30,16 @@ SOURCES += main.cpp\
     Operands/snif.cpp \
     Operands/sub.cpp \
     Operands/wmem.cpp \
-    Operands/xor.cpp
+    Operands/xor.cpp \
+    mainwindow.cpp
 
-HEADERS  += widget.hpp \
+HEADERS  += \
     metaprog.hpp \
     processor.hpp \
-    Util.hpp
+    Util.hpp \
+    mainwindow.hpp
 
-FORMS    += widget.ui
+FORMS    += \
+    mainwindow.ui
 
 QMAKE_CXXFLAGS += -std=c++14 -ftemplate-depth=1000000000

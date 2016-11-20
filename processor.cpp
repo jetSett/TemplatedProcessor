@@ -2,27 +2,10 @@
 #include <sstream>
 #include "processor.hpp"
 
-const unsigned memSize = 1000000;
+const unsigned memSize = 0x10000; // indexée de 0 à 0xFFFF
 
-Processor::Processor(const std::string& file) : _mem(memSize, 0), _pc(0)
+Processor::Processor() : _mem(memSize, 0), _pc(0)
 {
-
-    //reading the file
-    std::ifstream stream(file);
-
-    if(not stream)
-        throw std::string("Unable to open file : ") + file;
-
-    std::string s_word;
-    while(stream >> s_word){
-        std::stringstream ss;
-        ss << std::hex << s_word;
-        word w;
-        ss >> w;
-        _instructions.push_back(w);
-    }
-    std::cout << "Number of instructions : " << _instructions.size() << std::endl;
-
     _reg.fill(0);
     createWmem(_operands); // 0
     createAdd(_operands); // 1
@@ -42,6 +25,25 @@ Processor::Processor(const std::string& file) : _mem(memSize, 0), _pc(0)
     createRmemCopy(_operands); // F
 }
 
+void Processor::loadFile(const std::string &file){
+    _instructions.clear();
+    //reading the file
+    std::ifstream stream(file);
+
+    if(not stream)
+        throw std::string("Unable to open file : ") + file;
+
+    std::string s_word;
+    while(stream >> s_word){
+        std::stringstream ss;
+        ss << std::hex << s_word;
+        word w;
+        ss >> w;
+        _instructions.push_back(w);
+    }
+    emit fileLoaded();
+}
+
 void Processor::printState(){
     using namespace std;
     if(_instructions.size() == 0)
@@ -56,15 +58,12 @@ void Processor::printState(){
     cout << endl;
 }
 
-void Processor::run(bool interactive){
-    std::cout << "Running" << std::endl;
-    while(_pc < _instructions.size()){
-        printState();
-        word inst = _instructions[_pc];
-        if(interactive)
-            std::cin.get();
-        _operands[inst](_mem, _reg, _pc);
-    }
-    printState();
-    std::cout << "Ending" << std::endl;
+Processor::~Processor(){
+
+}
+
+void Processor::step(){
+    word inst = _instructions[_pc];
+    _operands[inst](_mem, _reg, _pc);
+    emit stepEnd();
 }

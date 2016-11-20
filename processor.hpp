@@ -1,6 +1,7 @@
 #ifndef PROCESSEUR_H
 #define PROCESSEUR_H
 
+#include <QObject>
 #include "metaprog.hpp"
 
 
@@ -21,12 +22,34 @@ void createLeth(Operands_table&); // D
 // implémentée dans le turfu !
 void createRmemCopy(Operands_table&); // F
 
-class Processor
+class Processor : public QObject
 {
+    Q_OBJECT
     public:
-        Processor(const std::string& file);
-        void run(bool interactive);
+        Processor();
+        ~Processor();
         void printState();
+        void loadFile(const std::string& file);
+
+        Memory& getMemory(){ // WARNING ! we are returning a reference
+            return _mem;
+        }
+
+        Reg_box& getRegbox(){ // IDEM
+            return _reg;
+        }
+
+        unsigned& getPc(){ //IDEM
+            return _pc;
+        }
+
+    public slots:
+        void step();
+
+    signals:
+        void fileLoaded();
+        void stepBegin();
+        void stepEnd();
     private:
         Operands_table _operands;
 

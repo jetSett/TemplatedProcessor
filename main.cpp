@@ -5,7 +5,7 @@
 
 #include <QApplication>
 
-#include "widget.hpp"
+#include "mainwindow.hpp"
 
 /// \warning Ceci va être impossible à comprendre
 
@@ -17,9 +17,9 @@ int main(int argc, char** argv)
 {
 
      QApplication app(argc, argv);
-     Widget *w = new Widget();
+     MainWindow w;
 
-     w->show();
+     w.show();
 
      return app.exec();
 }
