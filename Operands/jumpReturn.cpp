@@ -3,7 +3,7 @@
 #include "../Util.hpp"
 
 template<word arguments>
-void jump(Memory&, Reg_box& reg, unsigned int& pc){
+void jump(Memory&, Reg_box&, unsigned int& pc){
     int16_t c = conversionNeg12bit(arguments);
     pc +=  c;
     if(pc < 0){

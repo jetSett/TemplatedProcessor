@@ -3,8 +3,8 @@
 
 template<word arguments>
 void wmem(Memory& mem, Reg_box& reg, unsigned int& pc){
-    const word rj = arguments & 0b000011110000;
-    const word ri = arguments & 0b000000001111;
+    const word ri = (arguments & 0b000011110000) >> 4;
+    const word rj = arguments & 0b000000001111;
     mem[reg[rj]] = reg[ri];
     pc+=1;
 }
