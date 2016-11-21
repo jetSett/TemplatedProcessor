@@ -7,12 +7,15 @@ const unsigned screen_width = 160;
 const unsigned screen_height = 128;
 const unsigned screen_scale = 3;
 
-MainWindow::MainWindow(QWidget *parent) : _go(false), ui(new Ui::MainWindow),
+const unsigned zero_frames = 8;
+const unsigned instructionsPerFrame = 100;
+
+MainWindow::MainWindow(QWidget *parent) : ui(new Ui::MainWindow),
     QMainWindow(parent), _screen(screen_width*screen_scale, screen_height*screen_scale, QImage::Format_RGB444)
 {
     ui->setupUi(this);
 
-//    _timer = new QTimer(this);
+    _timer = new QTimer(this);
 
     ui->screenView->setMinimumHeight(screen_height*screen_scale+3);
     ui->screenView->setMinimumWidth(screen_width*screen_scale+3); // +3 for a more beautiful screen ;)
@@ -29,8 +32,9 @@ MainWindow::MainWindow(QWidget *parent) : _go(false), ui(new Ui::MainWindow),
     connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateReg()));
     connect(&_proc, SIGNAL(stepEnd()), this, SLOT(log()));
     connect(&_proc, SIGNAL(stepEnd()), this, SLOT(logMem()));
-    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateScreen()));
-    connect(this, SIGNAL(nextGo()), this, SLOT(on_goButton_pressed()));
+    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateScreenRun()));
+    connect(ui->updateScreenButton, SIGNAL(pressed()), this, SLOT(updateScreen()));
+    connect(_timer, SIGNAL(timeout()), this, SLOT(step()));
 
     updateReg();
     logMem();
@@ -72,6 +76,10 @@ void MainWindow::on_stepButton_pressed(){
             QMessageBox::information(this, "Ended", "You have reached the end of the program");
         }else{
              _proc.step();
+             updateReg();
+             updateScreen();
+             log();
+             logMem();
         }
     }else{
         QMessageBox::critical(this, "Error", "Nothing was loaded");
@@ -79,17 +87,38 @@ void MainWindow::on_stepButton_pressed(){
 }
 
 void MainWindow::on_goButton_pressed(){
-//    _timer->start(250);
-//    connect(_timer, SIGNAL(timeout()), this, SLOT(on_stepButton_pressed()));
-//    _proc.step();
+    ui->goButton->setEnabled(false);
+    ui->stopButton->setEnabled(true);
+    _timer->start(1);
+}
+
+void MainWindow::on_stopButton_pressed(){
+    ui->goButton->setEnabled(true);
+    ui->stopButton->setEnabled(false);
+    _timer->stop();
 }
 
 void MainWindow::logMem(){
-    QString t;
-    for(unsigned i = 0; i<100; ++i){
-        t += QString::number(screen_offset+i,16) + QString(" : ") + QString::number(_proc.getMemory()[screen_offset+i], 16) + QString("\n");
+    if(ui->memGroupBox->isChecked()){
+        QString t;
+        for(unsigned i = 0; i<100; ++i){
+            t += QString::number(screen_offset+i,16) + QString(" : ") + QString::number(_proc.getMemory()[screen_offset+i], 16) + QString("\n");
+        }
+        ui->memTextEdit->setText(t);
     }
-    ui->memTextEdit->setText(t);
+}
+
+void MainWindow::updateScreenRun(){
+    static int counter = 0;
+    if(ui->updateScreenGroupBox->isChecked()){
+        counter ++;
+        if(counter == ui->updateScreenSpinBox->value()){
+            updateScreen();
+            counter = 0;
+        }
+    }
+
+
 }
 
 void MainWindow::updateScreen(){
@@ -99,9 +128,9 @@ void MainWindow::updateScreen(){
             for(unsigned x1 = 0; x1 < screen_scale; ++x1){
                 for(unsigned y1 = 0; y1 < screen_scale; ++y1){
                     word pix = _proc.getMemory()[screen_offset+x+y*screen_width];
-                    unsigned r = 16 * ( (pix & 0b0000111100000000)>>8 );
-                    unsigned g = 16 * ( (pix & 0b0000000011110000)>>4 );
-                    unsigned b = 16 * ( (pix & 0b0000000000001111)>>0 );
+                    unsigned r = 16 * ( (pix & 0x0F00)>>8 );
+                    unsigned g = 16 * ( (pix & 0x00F0)>>4 );
+                    unsigned b = 16 * ( (pix & 0x000F)>>0 );
                     _screen.setPixelColor(QPoint(screen_scale*x+x1, screen_scale*y + y1), QColor(r, g, b));
                 }
             }
@@ -115,5 +144,25 @@ void MainWindow::updateScreen(){
 }
 
 void MainWindow::log(){
-    ui->historyTextEdit->setText(QString(_proc.printState().c_str()) + ui->historyTextEdit->toPlainText());
+    if(ui->historygroupBox->isChecked()){
+        ui->historyTextEdit->setText(QString(_proc.printState().c_str()) + ui->historyTextEdit->toPlainText());
+    }
+}
+
+void MainWindow::step(){
+    static int counter = 0;
+    for(int a = 0; a<ui->stepsByFramesSpinBox->value(); ++a){
+        if(not _proc.ended()){
+            _proc.step();
+        }else{
+            on_stopButton_pressed();
+            return;
+        }
+    }
+
+    updateReg();
+    log();
+    counter ++;
+    if(counter == zero_frames)
+        counter = 0;
 }

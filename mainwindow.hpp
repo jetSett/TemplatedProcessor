@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QTimer>
 #include "processor.hpp"
 
 namespace Ui {
@@ -23,25 +24,24 @@ public:
 public slots:
     void fileLoaded();
     void updateReg();
+    void updateScreenRun();
     void updateScreen();
     void log();
+    void logMem();
+
+    void step();
+
     void on_openAction_triggered();
     void on_stepButton_pressed();
     void on_goButton_pressed();
-    void logMem();
-
-signals:
-    void nextGo();
+    void on_stopButton_pressed();
 
 private:
-    bool _go;
-
-    QTimer* _timer;
-
     Ui::MainWindow *ui;
+
     Processor _proc;
 
-
+    QTimer* _timer;
 
     QImage _screen;
     QPainter* _painter;
