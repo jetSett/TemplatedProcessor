@@ -42,7 +42,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="warnigLabel">
              <property name="text">
               <string>Warning, 1*1 pixel in memory = 3*3 pixels on screen</string>
              </property>
@@ -58,7 +58,16 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
-            <widget class="QTextBrowser" name="textBrowser"/>
+            <widget class="QTextEdit" name="historyTextEdit">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -92,13 +101,13 @@
           <property name="title">
            <string>Memory</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QColumnView" name="columnView"/>
-             </item>
-            </layout>
+            <widget class="QTextEdit" name="memTextEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -110,9 +119,19 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
+            <widget class="QPushButton" name="goButton">
+             <property name="text">
+              <string>Go !</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="stepButton">
              <property name="text">
               <string>Step</string>
+             </property>
+             <property name="shortcut">
+              <string>Return</string>
              </property>
             </widget>
            </item>
@@ -146,6 +165,9 @@
   <action name="openAction">
    <property name="text">
     <string>Open file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>

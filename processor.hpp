@@ -28,7 +28,7 @@ class Processor : public QObject
     public:
         Processor();
         ~Processor();
-        void printState();
+        std::string printState();
         void loadFile(const std::string& file);
 
         Memory& getMemory(){ // WARNING ! we are returning a reference
@@ -41,6 +41,14 @@ class Processor : public QObject
 
         unsigned& getPc(){ //IDEM
             return _pc;
+        }
+
+        bool loaded(){
+            return _nbOpe != 0;
+        }
+
+        bool ended(){
+            return _pc >=_nbOpe;
         }
 
     public slots:
@@ -56,8 +64,7 @@ class Processor : public QObject
         Memory _mem;
         Reg_box _reg;
         unsigned _pc;
-
-        std::vector<word> _instructions;
+        unsigned _nbOpe;
 };
 
 #endif // PROCESSEUR_H
