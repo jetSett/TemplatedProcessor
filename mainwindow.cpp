@@ -10,8 +10,8 @@ const unsigned screen_scale = 3;
 const unsigned zero_frames = 8;
 const unsigned instructionsPerFrame = 100;
 
-MainWindow::MainWindow(QWidget *parent) : ui(new Ui::MainWindow),
-    QMainWindow(parent), _screen(screen_width*screen_scale, screen_height*screen_scale, QImage::Format_RGB444)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+    ui(new Ui::MainWindow), _screen(screen_width*screen_scale, screen_height*screen_scale, QImage::Format_RGB444)
 {
     ui->setupUi(this);
 
@@ -31,9 +31,15 @@ MainWindow::MainWindow(QWidget *parent) : ui(new Ui::MainWindow),
     connect(&_proc, SIGNAL(fileLoaded()), this, SLOT(fileLoaded()));
     connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateReg()));
     connect(&_proc, SIGNAL(stepEnd()), this, SLOT(log()));
-    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(logMem()));
+
     connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateScreenRun()));
+    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateMemRun()));
+
     connect(ui->updateScreenButton, SIGNAL(pressed()), this, SLOT(updateScreen()));
+    connect(ui->memFromSpinBox, SIGNAL(valueChanged(int)), this, SLOT(minMem(int)));
+    connect(ui->plotMemButton, SIGNAL(clicked(bool)), this, SLOT(logMem()));
+
+
     connect(_timer, SIGNAL(timeout()), this, SLOT(step()));
 
     updateReg();
@@ -67,7 +73,8 @@ void MainWindow::updateReg(){
 
 void MainWindow::on_openAction_triggered(){
     QString file = QFileDialog::getOpenFileName(this, "Open", "Please choose your obj file");
-    _proc.loadFile(file.toStdString());
+    if(file.size() != 0)
+        _proc.loadFile(file.toStdString());
 }
 
 void MainWindow::on_stepButton_pressed(){
@@ -78,8 +85,6 @@ void MainWindow::on_stepButton_pressed(){
              _proc.step();
              updateReg();
              updateScreen();
-             log();
-             logMem();
         }
     }else{
         QMessageBox::critical(this, "Error", "Nothing was loaded");
@@ -87,9 +92,17 @@ void MainWindow::on_stepButton_pressed(){
 }
 
 void MainWindow::on_goButton_pressed(){
-    ui->goButton->setEnabled(false);
-    ui->stopButton->setEnabled(true);
-    _timer->start(1);
+    if(_proc.loaded()){
+        if(_proc.ended()){
+            QMessageBox::information(this, "Ended", "You have reached the end of the program");
+        }else{
+            ui->goButton->setEnabled(false);
+            ui->stopButton->setEnabled(true);
+            _timer->start(1);
+        }
+    }else{
+        QMessageBox::critical(this, "Error", "Nothing was loaded");
+    }
 }
 
 void MainWindow::on_stopButton_pressed(){
@@ -98,14 +111,20 @@ void MainWindow::on_stopButton_pressed(){
     _timer->stop();
 }
 
+void MainWindow::on_resetButton_pressed(){
+    _proc.resetState();
+    updateScreen();
+    updateReg();
+    log();
+    logMem();
+}
+
 void MainWindow::logMem(){
-    if(ui->memGroupBox->isChecked()){
-        QString t;
-        for(unsigned i = 0; i<100; ++i){
-            t += QString::number(screen_offset+i,16) + QString(" : ") + QString::number(_proc.getMemory()[screen_offset+i], 16) + QString("\n");
-        }
-        ui->memTextEdit->setText(t);
-    }
+   QString t;
+    for(int i = ui->memFromSpinBox->value(); i<=ui->memToSpinBox->value(); ++i){
+        t += QString::number(i,16) + QString(" : ") + QString::number(_proc.getMemory()[i], 16) + QString("\n");
+   }
+   ui->memTextEdit->setText(t);
 }
 
 void MainWindow::updateScreenRun(){
@@ -117,21 +136,33 @@ void MainWindow::updateScreenRun(){
             counter = 0;
         }
     }
+}
 
-
+void MainWindow::updateMemRun(){
+    if(ui->updateMemCheckbox->isChecked()){
+        logMem();
+    }
 }
 
 void MainWindow::updateScreen(){
 
-    for(unsigned x = 0; x < screen_width; ++x){
-        for(unsigned y = 0; y < screen_height; ++y){
-            for(unsigned x1 = 0; x1 < screen_scale; ++x1){
-                for(unsigned y1 = 0; y1 < screen_scale; ++y1){
-                    word pix = _proc.getMemory()[screen_offset+x+y*screen_width];
-                    unsigned r = 16 * ( (pix & 0x0F00)>>8 );
-                    unsigned g = 16 * ( (pix & 0x00F0)>>4 );
-                    unsigned b = 16 * ( (pix & 0x000F)>>0 );
-                    _screen.setPixelColor(QPoint(screen_scale*x+x1, screen_scale*y + y1), QColor(r, g, b));
+    for(unsigned i = 0; i < screen_height; ++i){
+        for(unsigned j = 0; j < screen_width; ++j){
+
+            word pix = _proc.getMemory()[screen_offset+i*screen_width+j];
+            unsigned r = 16 * ( (pix & 0x0F00)>>8 );
+            unsigned g = 16 * ( (pix & 0x00F0)>>4 );
+            unsigned b = 16 * ( (pix & 0x000F)>>0 );
+
+            QColor c(r, g, b);
+
+            if( c != _screen.pixelColor((QPoint(screen_scale*j, screen_scale*screen_height - 1 - (screen_scale*i)))) ){
+                for(unsigned x1 = 0; x1 < screen_scale; ++x1){
+                    for(unsigned y1 = 0; y1 < screen_scale; ++y1){
+
+                        _screen.setPixelColor(QPoint(screen_scale*j + x1, screen_scale*screen_height - 1 - (screen_scale*i + y1)), c);
+
+                    }
                 }
             }
         }
@@ -151,13 +182,23 @@ void MainWindow::log(){
 
 void MainWindow::step(){
     static int counter = 0;
+    bool fin = false;
     for(int a = 0; a<ui->stepsByFramesSpinBox->value(); ++a){
         if(not _proc.ended()){
             _proc.step();
         }else{
             on_stopButton_pressed();
-            return;
+            fin = true;
+            break;
         }
+    }
+
+    if(fin){
+        log();
+        updateReg();
+        updateScreen();
+        counter = 0;
+        return;
     }
 
     updateReg();
@@ -165,4 +206,8 @@ void MainWindow::step(){
     counter ++;
     if(counter == zero_frames)
         counter = 0;
+}
+
+void MainWindow::minMem(int a){
+    ui->memToSpinBox->setMinimum(a);
 }

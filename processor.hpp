@@ -31,6 +31,8 @@ class Processor : public QObject
         std::string printState();
         void loadFile(const std::string& file);
 
+        void resetState();
+
         Memory& getMemory(){ // WARNING ! we are returning a reference
             return _mem;
         }

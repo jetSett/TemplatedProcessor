@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>944</width>
-    <height>675</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Processor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -152,7 +152,7 @@
              <item row="0" column="0">
               <widget class="QLabel" name="stepsByFramesLabel">
                <property name="text">
-                <string>Steps by frames</string>
+                <string>Steps by ms</string>
                </property>
               </widget>
              </item>
@@ -165,7 +165,7 @@
                 <number>500</number>
                </property>
                <property name="value">
-                <number>20</number>
+                <number>50</number>
                </property>
               </widget>
              </item>
@@ -180,12 +180,77 @@
            <string>Memory</string>
           </property>
           <property name="checkable">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="checked">
            <bool>false</bool>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QCheckBox" name="updateMemCheckbox">
+               <property name="text">
+                <string>Autoplot</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>From</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="memFromSpinBox">
+               <property name="maximum">
+                <number>65535</number>
+               </property>
+               <property name="value">
+                <number>45056</number>
+               </property>
+               <property name="displayIntegerBase">
+                <number>16</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>To</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="memToSpinBox">
+               <property name="minimum">
+                <number>45056</number>
+               </property>
+               <property name="maximum">
+                <number>65535</number>
+               </property>
+               <property name="value">
+                <number>45312</number>
+               </property>
+               <property name="displayIntegerBase">
+                <number>16</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="plotMemButton">
+               <property name="text">
+                <string>Plot</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <widget class="QTextEdit" name="memTextEdit">
              <property name="readOnly">
@@ -229,6 +294,13 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="resetButton">
+             <property name="text">
+              <string>Reset</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -266,5 +338,22 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>resetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>historyTextEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>870</x>
+     <y>650</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>300</x>
+     <y>608</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

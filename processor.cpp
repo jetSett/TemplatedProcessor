@@ -62,6 +62,12 @@ std::string Processor::printState(){
     return oss.str();
 }
 
+void Processor::resetState(){
+    std::fill(_mem.begin()+_nbOpe, _mem.end(), 0);
+    _reg.fill(0);
+    _pc = 0;
+}
+
 Processor::~Processor(){
 
 }

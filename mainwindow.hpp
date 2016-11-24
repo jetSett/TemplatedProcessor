@@ -24,10 +24,12 @@ public:
 public slots:
     void fileLoaded();
     void updateReg();
-    void updateScreenRun();
     void updateScreen();
     void log();
     void logMem();
+
+    void updateScreenRun();
+    void updateMemRun();
 
     void step();
 
@@ -35,6 +37,9 @@ public slots:
     void on_stepButton_pressed();
     void on_goButton_pressed();
     void on_stopButton_pressed();
+    void on_resetButton_pressed();
+
+    void minMem(int);
 
 private:
     Ui::MainWindow *ui;
