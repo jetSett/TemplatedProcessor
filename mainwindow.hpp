@@ -6,7 +6,14 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QTimer>
+#include <QThread>
+
+
+
 #include "processor.hpp"
+#include "worker.hpp"
+
+
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +38,8 @@ public slots:
     void updateScreenRun();
     void updateMemRun();
 
-    void step();
+    void stop();
+
 
     void on_openAction_triggered();
     void on_stepButton_pressed();
@@ -42,7 +50,11 @@ public slots:
     void minMem(int);
 
 private:
+
     Ui::MainWindow *ui;
+
+    Worker* _worker;
+    QThread* _workThread;
 
     Processor _proc;
 

@@ -31,13 +31,15 @@ SOURCES += main.cpp\
     Operands/sub.cpp \
     Operands/wmem.cpp \
     Operands/xor.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    worker.cpp
 
 HEADERS  += \
     metaprog.hpp \
     processor.hpp \
     Util.hpp \
-    mainwindow.hpp
+    mainwindow.hpp \
+    worker.hpp
 
 FORMS    += \
     mainwindow.ui

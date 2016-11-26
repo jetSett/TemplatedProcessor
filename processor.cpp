@@ -73,7 +73,11 @@ Processor::~Processor(){
 }
 
 void Processor::step(){
+    emit stepBegin();
     word instruction = _mem[_pc];
     _operands[instruction](_mem, _reg, _pc);
+    if(_pc >= _nbOpe){
+        emit finished();
+    }
     emit stepEnd();
 }

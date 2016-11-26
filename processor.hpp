@@ -60,6 +60,7 @@ class Processor : public QObject
         void fileLoaded();
         void stepBegin();
         void stepEnd();
+        void finished();
     private:
         Operands_table _operands;
 

@@ -8,14 +8,18 @@ const unsigned screen_height = 128;
 const unsigned screen_scale = 3;
 
 const unsigned zero_frames = 8;
-const unsigned instructionsPerFrame = 100;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-    ui(new Ui::MainWindow), _screen(screen_width*screen_scale, screen_height*screen_scale, QImage::Format_RGB444)
+    ui(new Ui::MainWindow), _screen(screen_width*screen_scale, screen_height*screen_scale, QImage::Format_RGB444), _workThread(new QThread(this))
 {
     ui->setupUi(this);
 
-    _timer = new QTimer(this);
+    _worker = new Worker(&_proc, 5000);
+    _worker->moveToThread(_workThread);
+
+    connect(_workThread, SIGNAL(started()), _worker, SLOT(start()));
+
+//    _timer = new QTimer(this);
 
     ui->screenView->setMinimumHeight(screen_height*screen_scale+3);
     ui->screenView->setMinimumWidth(screen_width*screen_scale+3); // +3 for a more beautiful screen ;)
@@ -29,18 +33,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->screenView->setScene(_scene);
 
     connect(&_proc, SIGNAL(fileLoaded()), this, SLOT(fileLoaded()));
-    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateReg()));
-    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(log()));
+    connect(_worker, SIGNAL(log()), this, SLOT(updateReg()));
+    connect(_worker, SIGNAL(log()), this, SLOT(log()));
 
-    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateScreenRun()));
-    connect(&_proc, SIGNAL(stepEnd()), this, SLOT(updateMemRun()));
+    connect(_worker, SIGNAL(end()), this, SLOT(on_stopButton_pressed()));
+    connect(_worker, SIGNAL(end()), this, SLOT(updateScreen()));
+    connect(_worker, SIGNAL(end()), this, SLOT(log()));
+    connect(_worker, SIGNAL(end()), this, SLOT(logMem()));
+    connect(_worker, SIGNAL(end()), this, SLOT(updateReg()));
+
+
+
+    connect(_worker, SIGNAL(log()), this, SLOT(updateScreenRun()));
+    connect(_worker, SIGNAL(log()), this, SLOT(updateMemRun()));
 
     connect(ui->updateScreenButton, SIGNAL(pressed()), this, SLOT(updateScreen()));
     connect(ui->memFromSpinBox, SIGNAL(valueChanged(int)), this, SLOT(minMem(int)));
     connect(ui->plotMemButton, SIGNAL(clicked(bool)), this, SLOT(logMem()));
 
-
-    connect(_timer, SIGNAL(timeout()), this, SLOT(step()));
+    connect(ui->stepsByFramesSpinBox, SIGNAL(valueChanged(int)), _worker, SLOT(setSteps(int)));
 
     updateReg();
     logMem();
@@ -98,7 +109,7 @@ void MainWindow::on_goButton_pressed(){
         }else{
             ui->goButton->setEnabled(false);
             ui->stopButton->setEnabled(true);
-            _timer->start(1);
+            _workThread->start();
         }
     }else{
         QMessageBox::critical(this, "Error", "Nothing was loaded");
@@ -108,7 +119,7 @@ void MainWindow::on_goButton_pressed(){
 void MainWindow::on_stopButton_pressed(){
     ui->goButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
-    _timer->stop();
+    _workThread->exit();
 }
 
 void MainWindow::on_resetButton_pressed(){
@@ -180,33 +191,39 @@ void MainWindow::log(){
     }
 }
 
-void MainWindow::step(){
-    static int counter = 0;
-    bool fin = false;
-    for(int a = 0; a<ui->stepsByFramesSpinBox->value(); ++a){
-        if(not _proc.ended()){
-            _proc.step();
-        }else{
-            on_stopButton_pressed();
-            fin = true;
-            break;
-        }
-    }
-
-    if(fin){
-        log();
-        updateReg();
-        updateScreen();
-        counter = 0;
-        return;
-    }
-
-    updateReg();
-    log();
-    counter ++;
-    if(counter == zero_frames)
-        counter = 0;
+void MainWindow::stop(){
+    ui->goButton->setEnabled(true);
+    ui->stopButton->setEnabled(false);
+//    _runthread->exit();
 }
+
+//void MainWindow::step(){
+//    static int counter = 0;
+//    bool fin = false;
+//    for(int a = 0; a<ui->stepsByFramesSpinBox->value(); ++a){
+//        if(not _proc.ended()){
+//            _proc.step();
+//        }else{
+//            on_stopButton_pressed();
+//            fin = true;
+//            break;
+//        }
+//    }
+
+//    if(fin){
+//        log();
+//        updateReg();
+//        updateScreen();
+//        counter = 0;
+//        return;
+//    }
+
+//    updateReg();
+//    log();
+//    counter ++;
+//    if(counter == zero_frames)
+//        counter = 0;
+//}
 
 void MainWindow::minMem(int a){
     ui->memToSpinBox->setMinimum(a);
