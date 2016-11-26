@@ -152,7 +152,7 @@
              <item row="0" column="0">
               <widget class="QLabel" name="stepsByFramesLabel">
                <property name="text">
-                <string>Steps by ms</string>
+                <string>Logging frequency</string>
                </property>
               </widget>
              </item>
