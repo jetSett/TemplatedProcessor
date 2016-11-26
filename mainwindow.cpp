@@ -96,6 +96,8 @@ void MainWindow::on_stepButton_pressed(){
              _proc.step();
              updateReg();
              updateScreen();
+             log();
+             logMem();
         }
     }else{
         QMessageBox::critical(this, "Error", "Nothing was loaded");
